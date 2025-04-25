@@ -1,0 +1,233 @@
+<!doctype html>
+<html>
+<head>
+<title>bless rng</title>
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+    background: #222;
+}
+@keyframes pulse {
+    0%   { transform: translateY(+10%) scale(1); opacity: .11; color: #121212; text-shadow: 0px 2px 2px #212121; }
+    25%  { transform: translateY(-0%) scale(1.01); opacity: .777; color: #333; text-shadow: 0px 2px 6px #121212; }
+    50%  { transform: translateY(+25%) scale(.99); opacity: .111; color: #121212; text-shadow: 0px 2px 6px #987; }
+    75%  { transform: translateY(-33%) scale(1.01); opacity: .55; color: #b2b2b2; text-shadow: 0px 2px 6px #123; }
+    100% { transform: translateY(+10%) scale(1); opacity: .11; color: #121212; text-shadow: 0px 2px 2px #212121; }
+}
+.text {
+    font-family: 'Courier New', monospace;
+    color: #121212;
+    opacity: .33;
+    text-shadow: 1px -2px 1px #202020;
+}
+.hehe {
+    animation: pulse 17s infinite;
+    position: absolute;
+    opacity: 0;
+    transition: .75s ease, opacity 1.5s ease, transform 7s ease-in-out, color .5s ease, text-shadow .5 ease;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 100px;
+    color: #121212;
+    text-shadow: 0px -2px 1px #020202;
+}
+@keyframes scroll-x { from { transform: translateX(0%); } to { transform: translateX(-50%); } }
+@keyframes scroll-y { from { transform: translateY(0%); } to { transform: translateY(-50%); } }
+.marquee {
+    position: absolute;
+    white-space: nowrap;
+    font-size: 1.7em;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-duration: 71s;
+}
+.top, .bottom {
+    animation-name: scroll-x;
+    width: 200%;
+}
+.left, .right {
+    animation-name: scroll-y;
+    height: 200%;
+    writing-mode: vertical-lr;
+    top: 0;
+}
+.top {
+    top: 17pt;
+    animation-direction: reverse;
+}
+.bottom {
+    bottom: 17pt;
+}
+.left {
+    left: 17pt;
+}
+.right {
+    right: 17pt;
+    animation-direction: reverse;
+}
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<span class="hehe" id="hehe" style="bottom:55%;left:25%;">hehe</span>
+<span class="hehe" id="llo" style="bottom:47%;left:46%;animation-delay:1s;animation-direction:alternate;">110</span>
+<span class="hehe" id="world" style="top:55%;right:25%;animation-delay:7s;animation-direction:reverse">w0r1d</span>
+
+<div class="marquee top text" id="top-line"></div>
+<div class="marquee bottom text" id="bottom-line"></div>
+<div class="marquee left text" id="left-line"></div>
+<div class="marquee right text" id="right-line"></div>
+
+<script id="canvas">
+const l = {
+    intr: {
+        lerp: (s,e,t) => s+(e-s)*t,
+        scur: (s,e,t) => s+(e-s)*(t**2*(3-2*t)),
+        cos: (s,e,t) => s+(e-s)*(.5-.5*Math.cos(Math.PI*t))
+    },
+    rand: {
+        angle: (n) => (2*n*Math.random()-n).toFixed(2),
+        bezier: () => Array(4).fill(0).map(() => Math.random().toFixed(2) * (Math.round(Math.random()) ? -1 : 1)),
+        color: (min=0x10,max=0x80) => Array(3).fill(0).map(() => Math.floor(Math.random()*(max-min)+min)),
+        position: (n=1) => Math.random() * n,
+        radius: (n=0x0500) => Math.random() * n + n / 2,
+        velocity: (n=.5) => (Math.random() - n) * 1 / n,
+    },
+}
+
+const can = document.getElementById('canvas');
+can.width = window.innerWidth;
+can.height = window.innerHeight;
+
+const con = can.getContext('2d');
+const seed = Math.round(Math.random())
+const conf = {
+    amount: document.getElementsByTagName('span').length,
+    radius: seed > 0 ? 0x0250 : 0x0500,
+}
+const grads = {
+    amount: seed > 0 ? conf.amount ** conf.amount : conf.amount,
+    speed: Math.E * 10 ** -2,
+    list: [],
+}
+const interval = grads.speed * 10 ** 6
+
+for (let i = 0; i < grads.amount; i++) {
+    grads.list.push({
+        position: {
+            x: l.rand.position(can.width),
+            y: l.rand.position(can.height),
+        },
+        velocity: {
+            x: l.rand.velocity(),
+            y: l.rand.velocity(),
+        },
+        color: { 
+            current: l.rand.color(),
+            target: l.rand.color(),
+        },
+        radius: {
+            current: l.rand.radius(conf.radius),
+            target: l.rand.radius(conf.radius)
+        }
+    });
+}
+
+function draw() {
+    con.clearRect(0, 0, can.width, can.height);
+    for (let grad of grads.list) {
+        for (let i = 0; i < 3; i++) {
+            grad.color.current[i] = l.intr.cos(grad.color.current[i], grad.color.target[i], grads.speed);
+        }
+        grad.radius.current = l.intr.cos(grad.radius.current, grad.radius.target, grads.speed);
+        const radialGradient = con.createRadialGradient(
+            grad.position.x, grad.position.y, 0,
+            grad.position.x, grad.position.y, grad.radius.current,
+        );
+        radialGradient.addColorStop(0, `rgb(${grad.color.current.join(",")})`);
+        radialGradient.addColorStop(1, 'transparent');
+        con.fillStyle = radialGradient;
+        con.fillRect(0, 0, can.width, can.height)
+    }
+    
+}
+
+function animate() {
+    grads.list.map((grad) => {
+        grad.position.x += grad.velocity.x
+        grad.position.y += grad.velocity.y
+        if (grad.position.x < 0 || grad.position.x > can.width) grad.velocity.x *= -1
+        if (grad.position.y < 0 || grad.position.y > can.height) grad.velocity.y *= -1
+    })
+    draw();
+    requestAnimationFrame(animate);
+}
+
+animate()
+
+setInterval(() => {
+    grads.list.map((grad) => {
+        grad.color.target = l.rand.color();
+        console.log("color:", grad.color.target);
+    });
+}, interval);
+
+setInterval(() => {
+    grads.list.map((grad) => {
+        grad.radius.target = l.rand.radius(conf.radius);
+        console.log("radius:", grad.radius.target);
+    });
+}, interval);
+
+hehe = Array.from(document.getElementsByClassName('hehe'));
+setInterval(() => {
+    hehe.forEach((elem) => {
+        elem.style.animationTimingFunction = `cubic-bezier(${l.rand.bezier().join(",")})`;
+        console.log(elem.style.animationTimingFunction)
+    });
+}, interval);
+
+window.addEventListener('resize', () => {
+    can.width = window.innerWidth,
+    can.height = window.innerHeight
+});
+
+document.getElementById('hehe').addEventListener('click', () => {
+    window.open('https://github.com/anarhehest/anarhehest.github.io', '_blank');
+});
+
+document.getElementById('llo').addEventListener('click', () => {
+    window.open('https://en.wikipedia.org/wiki/Fibonacci_sequence', '_blank');
+});
+
+document.getElementById('world').addEventListener('click', () => {
+    window.open('https://github.com/anarhehest/pizdec', '_blank');
+});
+</script>
+<script id="marquees">
+function marquee() {
+    const fill = 'he';
+    const lines = {
+        top: document.getElementById('top-line'),
+        bottom: document.getElementById('bottom-line'),
+        left: document.getElementById('left-line'),
+        right: document.getElementById('right-line'),
+    };
+    const cpl = Math.ceil((window.innerWidth / (10)) * 4);
+    const text = fill.repeat(cpl);
+
+    lines.top.textContent = text;
+    lines.bottom.textContent = text;
+    lines.left.textContent = text;
+    lines.right.textContent = text;
+}
+
+window.addEventListener('load', marquee);
+window.addEventListener('resize', marquee);
+</script>
+</body>
+</html>
