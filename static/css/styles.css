@@ -1,0 +1,34 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #050709;
+}
+
+.rcg {
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    position: absolute;
+}
+
+#container {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center items vertically */
+    background-color: black;
+    padding: 20px;
+    width: 20%;
+    height: fit-content;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s;
+}
+
+.text {
+    color: white;
+    font-family: "Andale Mono";
+    text-decoration: none;
+}
