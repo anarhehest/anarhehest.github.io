@@ -1,3 +1,13 @@
+header {
+    margin-top: 10px;
+    background-color: black;
+    opacity: 0.5;
+}
+
+header p {
+    display: inline-block;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -12,19 +22,31 @@ body {
     position: absolute;
 }
 
-#container {
+.grid {
+    display: flex;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 2fr));
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px
+}
+
+.container {
+    opacity: 0.8;
     display: flex;
     justify-content: center;
-    align-items: center; /* Center items vertically */
+    align-items: center;
     background-color: black;
+    margin: 20px;
     padding: 20px;
-    width: 20%;
+    width: 200px;
     height: fit-content;
-    position: absolute;
-    left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
-    transition: opacity 0.3s;
+    transition: opacity 0.2s ease-in;
+}
+
+.container:hover {
+    opacity: 1;
 }
 
 .text {

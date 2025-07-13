@@ -20,3 +20,12 @@ $(document).ready(function () {
   };
   colorLoop();
 });
+
+
+function marquee() {
+  const fill = document.getElementById("marquee").textContent
+  fill.textContent = fill.repeat(Math.ceil((window.innerWidth / (5)) * 2))
+}
+
+window.addEventListener('load', marquee);
+window.addEventListener('resize', marquee);
