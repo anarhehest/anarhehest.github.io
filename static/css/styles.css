@@ -32,32 +32,8 @@ body {
     gap: 20px
 }
 
-.container {
-    opacity: 0.8;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background-color: black;
-    margin: 20px;
-    padding: 20px;
-    width: 200px;
-    max-height: 20px;
-    height: fit-content;
-    top: 50%;
-    transition: opacity 0.2s ease-in;
-}
-
-.container:hover {
-    opacity: 1;
-}
-
 .text {
     color: white;
-    font-family: "Andada Pro", serif;
+    font-family: "Andada Pro", "Garamond", serif;
     text-decoration: none;
-}
-
-.subheader {
-    font-weight: bold;
 }
