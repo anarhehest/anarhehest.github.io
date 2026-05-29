@@ -51,7 +51,7 @@
             data.forEach(function(repo) {
                 html += '<div class="reveal project-card">' +
                     '<h3><a href="' + repo.html_url + '" target="_blank">' + repo.name + '</a></h3>' +
-                    '<p>' + (repo.description || 'Без описания') + '</p>' +
+                    '<p>' + (repo.description || '') + '</p>' +
                     '</div>';
             });
             $('#projects').html(html);
