@@ -1,20 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <title>anarhehest.github.io</title>
 
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../static/js/rcg.js"></script>
     <link rel="stylesheet" href="../static/css/styles.css">
     <link rel="shortcut icon" type="image/x-icon" href="static/favicon.ico">
-    <style>@import url('https://fonts.googleapis.com/css2?family=Andada+Pro:ital,wght@0,400..840;1,400..840&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');</style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Andada+Pro:ital,wght@0,400..840;1,400..840&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+    </style>
 </head>
-
+<body class="rcg">
+<!-- Шапка -->
 <header>
-<div class="wrapper">
-    <a class="rcg header-text" href="https://github.com/anarhehest">anarhehest</a>
-</div>
+    <a class="reveal    header-text" href="https://github.com/anarhehest">anarhehest</a>
 </header>
+
+<section id="projects"></section>
+
+<script>
+    // Весь код запускаем только после готовности DOM
+    $(document).ready(function () {
+        // 1. Фоновая анимация
+        startGradientAnimationSmooth($('body'), {
+            cover: true,
+            lerpFactor: 0.01,
+            driftAngle: 20,
+            driftH: 10,
+            driftS: 5,
+            driftL: 1,
+            glow: false,
+        });
+
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(function(el) {
+            observer.observe(el);
+        });
+
+        $.getJSON('https://api.github.com/users/anarhehest/repos?sort=updated&per_page=6', function(data) {
+            var html = '';
+            data.forEach(function(repo) {
+                html += '<div class="reveal project-card">' +
+                    '<h3><a href="' + repo.html_url + '" target="_blank">' + repo.name + '</a></h3>' +
+                    '<p>' + (repo.description || 'Без описания') + '</p>' +
+                    '</div>';
+            });
+            $('#projects').html(html);
+
+            document.querySelectorAll('#projects .reveal').forEach(function(el) {
+                observer.observe(el);
+            });
+        }).fail(function() {
+            $('#projects').html('<p>Не удалось загрузить проекты 😔</p>');
+        });
+    });
+</script>
+</body>
 </html>

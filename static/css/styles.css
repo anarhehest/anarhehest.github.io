@@ -7,14 +7,45 @@ body {
 
 header {
     margin-top: 10px;
-
 }
 
 .header-text {
-    color: white;
-    font-size: 24px;
+    font-size: 42pt;
     font-family: "Andada Pro", "Garamond", serif;
     text-decoration: none;
     margin-left: 20px;
     padding: 20px;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: black;
+    transition-duration: 0.2s;
+}
+
+.header-text:hover {
+    text-shadow: 0 2pt white;
+    transition-duration: 0.2s;
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.project-card {
+    background: rgba(0,0,0,0.05);
+    backdrop-filter: blur(100px);
+    padding: 20px;
+    margin: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.project-card a {
+    color: inherit;
+    font-family: "Andada Pro", "Garamond", serif;
+    text-decoration: none;
 }
